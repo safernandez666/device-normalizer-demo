@@ -1,0 +1,114 @@
+/* Hallmark · redesign · genre: modern-minimal · macrostructure: Workbench bento
+ * scope: dashboard + design-system deps · single accent · tabular numerics
+ */
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #18181b;
+  --color-card: #f4f4f5;
+  --color-card-foreground: #18181b;
+  --color-border: #e4e4e7;
+  --color-muted: #71717a;
+  --color-muted-foreground: #52525b;
+  --color-accent: #3b82f6;
+  --color-accent-foreground: #ffffff;
+  --color-ring: #3b82f6;
+  --color-input: #e4e4e7;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.375rem;
+  --radius-xl: 0.75rem;
+  --radius-lg: 0.5rem;
+}
+
+.dark {
+  --color-background: #18181b;
+  --color-foreground: #ffffff;
+  --color-card: #1c1c1f;
+  --color-card-foreground: #ffffff;
+  --color-border: #27272a;
+  --color-muted: #a1a1aa;
+  --color-muted-foreground: #a1a1aa;
+  --color-accent: #2563eb;
+  --color-accent-foreground: #ffffff;
+  --color-ring: #3b82f6;
+  --color-input: #27272a;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Hide scrollbars on mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Respect reduced-motion: collapse CSS transitions/animations. Note: the
+   framer-motion mount reveals are JS-driven and need useReducedMotion() in
+   the components to fully honor this — tracked as a follow-up. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
