@@ -1,5 +1,11 @@
 # Device Normalizer
 
+<!-- README-I18N:START -->
+
+**English** | [Español](./README.es.md)
+
+<!-- README-I18N:END -->
+
 > A device-coverage security dashboard. Correlates **EDR + MDM + IDP** sources
 > into a single normalized inventory, surfaces coverage gaps, and scores
 > overall fleet posture.
