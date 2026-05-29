@@ -1,35 +1,112 @@
 # Device Normalizer
 
-A device-coverage dashboard for security teams. It correlates endpoints across
-**EDR (CrowdStrike)**, **MDM (JumpCloud)** and **IDP (Okta)** into one normalized
-inventory, then surfaces coverage gaps — devices missing EDR, missing MDM,
-identity-only / shadow IT, stale agents — and scores overall fleet posture.
+> A device-coverage security dashboard. Correlates **EDR + MDM + IDP** sources
+> into a single normalized inventory, surfaces coverage gaps, and scores
+> overall fleet posture.
 
-> **Demo build.** This is a frontend-only showcase that runs entirely on
-> **synthetic mock data** — no backend, no real devices or people. The data layer
-> is intercepted in [`src/lib/mock-fetch.ts`](src/lib/mock-fetch.ts).
+**Demo build · runs entirely on synthetic mock data, no backend.**
 
-## Highlights
+---
 
-- **Bento dashboard** — risk-score + source-health hero, KPI band, paired
-  operational panels, and full-width inventory tables.
-- **Coverage controls** — KRI/CIS-tagged checks (e.g. "MDM without EDR").
-- **People & dual-use views** — per-owner compliance; corporate vs. personal devices.
-- **Scoped AI assistant** — canned, inventory-only Q&A (demo).
-- Accessible nav rail, light/dark themes, reduced-motion aware, tabular numerics.
+## Why this exists
+
+In most orgs, devices are tracked by three independent systems:
+
+| Layer | Typical tool | Knows about |
+|---|---|---|
+| **EDR** — endpoint detection | CrowdStrike | every host the sensor sees |
+| **MDM** — device management | JumpCloud | every device IT enrolled |
+| **IDP** — identity | Okta | every device that touched login |
+
+Each has its own inventory. The overlap is partial, and the **gaps are where risk lives**:
+
+- A laptop in MDM but missing the EDR agent.
+- A device with EDR running but never enrolled in MDM.
+- A user with Okta sessions and no managed device (likely BYOD / shadow IT).
+- A managed device that stopped reporting 90+ days ago.
+
+Device Normalizer correlates devices across the three sources, deduplicates them,
+classifies each into a coverage status (`FULLY_MANAGED`, `NO_EDR`, `NO_MDM`,
+`IDP_ONLY`, `SERVER`, `STALE`, …) and exposes the gaps on a single dashboard.
+
+## What's in the demo
+
+- **Dashboard (bento)** — risk-score gauge, 7-status KPI band, controls health,
+  sync diff, distribution charts (status / source / region / OS), time-series
+  trend, device inventory, low-confidence list.
+- **People** — per-owner compliance with drill-down to that person's devices.
+- **Dual-use** — users with both corporate and personal devices; acknowledge flow.
+- **Controls** — KRI / CIS-tagged checks (MDM-without-EDR, per-source agent
+  dormancy, zombie devices, …) with affected-device lists.
+- **Search** — filter the normalized inventory by status, source, region.
+- **Settings** — sync interval, source configuration health, recent sync runs.
+- **AI assistant** — scoped Q&A panel (canned replies in the demo).
+
+All numbers, hostnames, owners and organizations are **fabricated**.
+
+## Architecture (demo)
+
+```
+ ┌────────────── React app ──────────────┐
+ │  pages → components                   │
+ │            ↓ fetch() / api.*          │
+ │   ┌──── mock-fetch.ts ────┐           │
+ │   │ intercepts            │ ←── synthetic data
+ │   │ /api/*  /auth/*       │           │
+ │   └───────────────────────┘           │
+ └───────────────────────────────────────┘
+```
+
+`src/lib/mock-fetch.ts` shims `window.fetch` to return fabricated data.
+Both the typed `api` object (`src/lib/api.ts`) **and** the raw `fetch()`
+calls in secondary pages flow through it, so every view renders without
+a backend.
 
 ## Stack
 
-React 19 · TypeScript · Vite · Tailwind CSS v4 · Recharts · Motion · lucide-react
+| Layer | Choice | Why |
+|---|---|---|
+| Framework | React 19 + TypeScript | type safety, modern hooks |
+| Build | Vite | fast dev, simple static output |
+| Styles | Tailwind CSS v4 | utility-first, OKLCH-friendly tokens |
+| Charts | Recharts | composable, accessible SVG charts |
+| Motion | Motion (framer-motion successor) | declarative, respects reduced-motion |
+| Icons | lucide-react | one icon set, consistent stroke |
+| Mock data | `window.fetch` interceptor | no MSW dep, pure runtime, deterministic |
 
 ## Run
 
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm run build    # production build
+npm run build    # production build → dist/
+npm run preview  # serve the production build
 ```
 
-## Notes
+## Deploy
 
-All numbers, hostnames, owners and organizations in this demo are fabricated.
+Build is fully static — drop `dist/` on any static host (Vercel, Netlify,
+GitHub Pages, Cloudflare Pages).
+
+```bash
+npm run build
+# upload dist/  →  done
+```
+
+## Design notes
+
+- **Bento layout** with explicit hierarchy (risk + sources hero, KPI band,
+  paired operational panels, full-width tables) — replaces the
+  "everything-is-a-card" stack that the redesign started from.
+- **Single accent** (no rainbow nav icons), tabular numerics, lightness-based
+  card elevation, solid logo tile.
+- `prefers-reduced-motion` honored: CSS animations collapse, framer-motion
+  reveals soften.
+- Light / dark theme with persistent toggle.
+- Mixed Spanish / English copy in some surfaces — preserved from the original.
+
+## Known demo limitations
+
+- `/auth/logout` link 404s in static hosting (no backend) — purely cosmetic.
+- AI assistant replies are canned keyword matches, not an actual LLM call.
+- One transitive npm vulnerability (moderate) — see `npm audit`.
