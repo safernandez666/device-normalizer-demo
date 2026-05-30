@@ -123,6 +123,26 @@ npm run build
 # upload dist/  →  done
 ```
 
+## Pasar a producción
+
+Este demo corre con datos sintéticos. Para reemplazar el mock layer por un
+backend real que hable con CrowdStrike / JumpCloud / Okta:
+
+1. Copiá `.env.example` a `.env` y poné `VITE_USE_MOCK=false`. Agregá
+   `VITE_API_BASE_URL=…` si el backend vive en otro origen.
+2. Levantá un backend en `/api/*` y `/auth/*` que devuelva las mismas
+   shapes que espera el frontend — mirá
+   [`src/lib/mock-fetch.ts`](src/lib/mock-fetch.ts) para los schemas de
+   respuesta, o cableá tu cliente real de la API.
+3. El backend (no parte de este repo) necesita credenciales de cada vendor:
+   - `CROWDSTRIKE_CLIENT_ID`, `CROWDSTRIKE_CLIENT_SECRET`
+   - `JUMPCLOUD_API_KEY`
+   - `OKTA_DOMAIN`, `OKTA_API_TOKEN`
+   - `OPENAI_API_KEY` (para el asistente IA — opcional)
+
+Con `VITE_USE_MOCK=false` en build time, Vite tree-shakea `mock-fetch.ts`
+del bundle — el build de producción no carga el dataset sintético.
+
 ## Notas de diseño
 
 - **Layout bento** con jerarquía explícita (risk + sources como hero, banda

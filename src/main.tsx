@@ -1,4 +1,3 @@
-import "./lib/mock-fetch"; // demo: intercept /api & /auth with synthetic data (must run first)
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -13,8 +12,16 @@ if (prefersDark) {
   document.documentElement.classList.remove("dark");
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+// Mock data layer is on by default. Set VITE_USE_MOCK=false in .env to
+// disable it (and let Vite tree-shake mock-fetch.ts out of the build) when
+// pointing at a real backend.
+const useMock = import.meta.env.VITE_USE_MOCK !== "false";
+const ready = useMock ? import("./lib/mock-fetch") : Promise.resolve();
+
+ready.then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+});
