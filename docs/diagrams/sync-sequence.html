@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Normalizer · Sync sequence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #fafafa;
+      --color-ink:     #18181b;
+      --color-muted:   #52525b;
+      --color-soft:    #a1a1aa;
+      --color-accent:  #3b82f6;
+      --color-link:    #2563eb;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1200px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-sans); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Sequence · Device Normalizer</p>
+    <h1>Lifecycle of a sync trigger</h1>
+
+    <svg viewBox="0 0 1000 580" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#52525b"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3b82f6"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#fafafa"/>
+
+      <!-- Lifelines (drawn first, behind everything) -->
+      <line x1="120" y1="88" x2="120" y2="460" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="380" y1="88" x2="380" y2="460" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="640" y1="88" x2="640" y2="460" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="880" y1="88" x2="880" y2="460" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- Activation bar on UI lifeline (UI holds control from msg 1 to msg 8) -->
+      <rect x="376" y="120" width="8" height="288" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="0.8"/>
+
+      <!-- Activation bar on mock-fetch (short — only during each request) -->
+      <rect x="636" y="156" width="8" height="40" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="0.8"/>
+      <rect x="636" y="312" width="8" height="40" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="0.8"/>
+
+      <!-- Messages (drawn before headers so headers cover endpoints visually if needed) -->
+      <!-- 1. User → UI: click -->
+      <line x1="128" y1="120" x2="372" y2="120" stroke="#52525b" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- 2. UI → mock: POST trigger -->
+      <line x1="388" y1="156" x2="632" y2="156" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <!-- 3. mock ↩ UI: started (dashed return) -->
+      <line x1="632" y1="192" x2="388" y2="192" stroke="#2563eb" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arrow-link)"/>
+      <!-- 4. UI → Toast: started -->
+      <line x1="388" y1="228" x2="872" y2="228" stroke="#52525b" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- 5. UI self-loop (poll loop): U-shape returning -->
+      <path d="M 388 272 L 432 272 L 432 296 L 388 296" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+      <!-- 6. UI → mock: GET sync/last -->
+      <line x1="388" y1="312" x2="632" y2="312" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <!-- 7. mock ↩ UI: { id: 8 } new id -->
+      <line x1="632" y1="352" x2="388" y2="352" stroke="#2563eb" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arrow-link)"/>
+      <!-- 8. UI → Toast: complete (accent — primary success) -->
+      <line x1="388" y1="400" x2="872" y2="400" stroke="#3b82f6" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+      <!-- Message labels (mid-arrow, with paper masks) -->
+      <!-- 1 -->
+      <rect x="180" y="108" width="120" height="12" rx="2" fill="#fafafa"/>
+      <text x="240" y="118" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">click "Sync now"</text>
+
+      <!-- 2 -->
+      <rect x="424" y="144" width="172" height="12" rx="2" fill="#fafafa"/>
+      <text x="510" y="154" fill="#2563eb" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">POST /api/sync/trigger</text>
+
+      <!-- 3 -->
+      <rect x="448" y="180" width="124" height="12" rx="2" fill="#fafafa"/>
+      <text x="510" y="190" fill="#2563eb" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">{ started: true }</text>
+
+      <!-- 4 -->
+      <rect x="552" y="216" width="156" height="12" rx="2" fill="#fafafa"/>
+      <text x="630" y="226" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">toast "Sync started"</text>
+
+      <!-- 5 — self-loop label, right of the loop -->
+      <text x="448" y="288" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" font-style="italic">poll every 2 s</text>
+
+      <!-- 6 -->
+      <rect x="416" y="300" width="188" height="12" rx="2" fill="#fafafa"/>
+      <text x="510" y="310" fill="#2563eb" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">GET /api/sync/last</text>
+
+      <!-- 7 -->
+      <rect x="424" y="340" width="172" height="12" rx="2" fill="#fafafa"/>
+      <text x="510" y="350" fill="#2563eb" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">{ last_sync: { id: 8 } }</text>
+
+      <!-- 8 (accent — primary) -->
+      <rect x="548" y="388" width="164" height="12" rx="2" fill="#fafafa"/>
+      <text x="630" y="398" fill="#3b82f6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="500">toast "Sync complete"</text>
+
+      <!-- Actor boxes (drawn on top, covering lifeline endpoints) -->
+      <!-- User -->
+      <rect x="60" y="40" width="120" height="48" rx="6" fill="#fafafa"/>
+      <rect x="60" y="40" width="120" height="48" rx="6" fill="rgba(82,82,91,0.10)" stroke="#a1a1aa" stroke-width="1"/>
+      <rect x="68" y="48" width="36" height="12" rx="2" fill="transparent" stroke="rgba(161,161,170,0.50)" stroke-width="0.8"/>
+      <text x="86" y="57" fill="#a1a1aa" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">USER</text>
+      <text x="120" y="78" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">User</text>
+
+      <!-- UI -->
+      <rect x="316" y="40" width="128" height="48" rx="6" fill="#fafafa"/>
+      <rect x="316" y="40" width="128" height="48" rx="6" fill="#ffffff" stroke="#18181b" stroke-width="1"/>
+      <rect x="324" y="48" width="28" height="12" rx="2" fill="transparent" stroke="rgba(24,24,27,0.40)" stroke-width="0.8"/>
+      <text x="338" y="57" fill="#18181b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+      <text x="380" y="78" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Dashboard</text>
+
+      <!-- mock-fetch (focal) -->
+      <rect x="572" y="40" width="136" height="48" rx="6" fill="#fafafa"/>
+      <rect x="572" y="40" width="136" height="48" rx="6" fill="rgba(59,130,246,0.10)" stroke="#3b82f6" stroke-width="1"/>
+      <rect x="580" y="48" width="60" height="12" rx="2" fill="transparent" stroke="rgba(59,130,246,0.50)" stroke-width="0.8"/>
+      <text x="610" y="57" fill="#3b82f6" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">INTERCEPT</text>
+      <text x="640" y="78" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">mock-fetch</text>
+
+      <!-- Toast -->
+      <rect x="820" y="40" width="120" height="48" rx="6" fill="#fafafa"/>
+      <rect x="820" y="40" width="120" height="48" rx="6" fill="#ffffff" stroke="#18181b" stroke-width="1"/>
+      <rect x="828" y="48" width="40" height="12" rx="2" fill="transparent" stroke="rgba(24,24,27,0.40)" stroke-width="0.8"/>
+      <text x="848" y="57" fill="#18181b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">NOTIF</text>
+      <text x="880" y="78" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Toast</text>
+
+      <!-- Legend strip -->
+      <line x1="40" y1="488" x2="960" y2="488" stroke="rgba(24,24,27,0.12)" stroke-width="0.8"/>
+      <text x="40" y="504" fill="#52525b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <line x1="40" y1="524" x2="40" y2="544" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="52" y="538" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Lifeline</text>
+
+      <rect x="148" y="520" width="8" height="24" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="0.8"/>
+      <text x="164" y="538" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Activation bar</text>
+
+      <line x1="288" y1="534" x2="316" y2="534" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="324" y="538" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Request</text>
+
+      <line x1="412" y1="534" x2="440" y2="534" stroke="#2563eb" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arrow-link)"/>
+      <text x="448" y="538" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Response</text>
+
+      <line x1="540" y1="534" x2="568" y2="534" stroke="#3b82f6" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="576" y="538" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Primary success</text>
+
+      <line x1="724" y1="534" x2="752" y2="534" stroke="#52525b" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="760" y="538" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Side effect</text>
+    </svg>
+  </div>
+</body>
+</html>

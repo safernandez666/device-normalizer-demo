@@ -55,23 +55,40 @@ los clasifica en un status de cobertura (`FULLY_MANAGED`, `NO_EDR`, `NO_MDM`,
 
 Todos los números, hostnames, owners y organizaciones son **inventados**.
 
-## Arquitectura (demo)
+## Cómo funciona
 
-```
- ┌────────────── React app ──────────────┐
- │  pages → components                   │
- │            ↓ fetch() / api.*          │
- │   ┌──── mock-fetch.ts ────┐           │
- │   │ intercepts            │ ←── synthetic data
- │   │ /api/*  /auth/*       │           │
- │   └───────────────────────┘           │
- └───────────────────────────────────────┘
-```
+### Arquitectura
 
-`src/lib/mock-fetch.ts` shimea `window.fetch` para devolver datos fabricados.
-Tanto el objeto `api` tipado (`src/lib/api.ts`) **como** los `fetch()` directos
-de las páginas secundarias pasan por ahí, así que toda vista renderiza sin
-backend.
+![Arquitectura](docs/diagrams/architecture.png)
+
+`src/lib/mock-fetch.ts` shimea `window.fetch` para que tanto `lib/api.ts`
+como los `fetch()` directos de las páginas secundarias pasen por el
+interceptor. Toda vista renderiza sin backend.
+[Abrir diagrama →](docs/diagrams/architecture.html)
+
+### Correlación de sources
+
+![Flowchart de correlación de sources](docs/diagrams/source-correlation.png)
+
+Cómo se clasifica un device a partir de sus sources — `Has EDR? → Has MDM?`
+en cascada produce los statuses canónicos (`FULLY_MANAGED`, `NO_EDR`, …).
+[Abrir diagrama →](docs/diagrams/source-correlation.html)
+
+### Lifecycle de un sync
+
+![Sequence diagram del sync](docs/diagrams/sync-sequence.png)
+
+Un trigger dispara `POST /api/sync/trigger`, después la UI hace polling
+de `/api/sync/last` cada 2 s hasta que aparece un run ID nuevo, y cierra
+con un toast. [Abrir diagrama →](docs/diagrams/sync-sequence.html)
+
+### Modelo de datos
+
+![Modelo de datos](docs/diagrams/data-model.png)
+
+La forma de los recursos normalizados — `Device` como aggregate root, con
+`Summary`, `SyncRun`, `Insight` y `Control` alrededor.
+[Abrir diagrama →](docs/diagrams/data-model.html)
 
 ## Stack
 

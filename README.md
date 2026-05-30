@@ -52,23 +52,39 @@ classifies each into a coverage status (`FULLY_MANAGED`, `NO_EDR`, `NO_MDM`,
 
 All numbers, hostnames, owners and organizations are **fabricated**.
 
-## Architecture (demo)
+## How it works
 
-```
- ┌────────────── React app ──────────────┐
- │  pages → components                   │
- │            ↓ fetch() / api.*          │
- │   ┌──── mock-fetch.ts ────┐           │
- │   │ intercepts            │ ←── synthetic data
- │   │ /api/*  /auth/*       │           │
- │   └───────────────────────┘           │
- └───────────────────────────────────────┘
-```
+### Architecture
 
-`src/lib/mock-fetch.ts` shims `window.fetch` to return fabricated data.
-Both the typed `api` object (`src/lib/api.ts`) **and** the raw `fetch()`
-calls in secondary pages flow through it, so every view renders without
-a backend.
+![Architecture](docs/diagrams/architecture.png)
+
+`src/lib/mock-fetch.ts` shims `window.fetch` so both `lib/api.ts` and raw
+`fetch()` calls in secondary pages get intercepted. Every view renders
+without a backend. [Open diagram →](docs/diagrams/architecture.html)
+
+### Source correlation
+
+![Source correlation flowchart](docs/diagrams/source-correlation.png)
+
+How a device gets classified from its sources — `Has EDR? → Has MDM?`
+cascades into the canonical statuses (`FULLY_MANAGED`, `NO_EDR`, …).
+[Open diagram →](docs/diagrams/source-correlation.html)
+
+### Sync lifecycle
+
+![Sync sequence diagram](docs/diagrams/sync-sequence.png)
+
+A sync trigger fires `POST /api/sync/trigger`, then the UI polls
+`/api/sync/last` every 2 s until a fresh run ID appears, and finishes
+with a toast. [Open diagram →](docs/diagrams/sync-sequence.html)
+
+### Data model
+
+![Data model](docs/diagrams/data-model.png)
+
+The shape of the normalized resources — `Device` as the aggregate root,
+with `Summary`, `SyncRun`, `Insight` and `Control` related around it.
+[Open diagram →](docs/diagrams/data-model.html)
 
 ## Stack
 

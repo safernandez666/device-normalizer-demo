@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Normalizer · Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #fafafa;
+      --color-paper-2: #f4f4f5;
+      --color-ink:     #18181b;
+      --color-muted:   #52525b;
+      --color-soft:    #a1a1aa;
+      --color-accent:  #3b82f6;
+      --color-link:    #2563eb;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1200px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture · Device Normalizer</p>
+    <h1>How the demo renders without a backend</h1>
+
+    <svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#52525b"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3b82f6"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#fafafa"/>
+
+      <!-- Arrows first (behind boxes) -->
+      <!-- Pages → api.ts (top) -->
+      <line x1="188" y1="232" x2="240" y2="172" stroke="#52525b" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- Pages → Raw fetch (bottom) -->
+      <line x1="188" y1="264" x2="240" y2="324" stroke="#52525b" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- api.ts → mock-fetch -->
+      <line x1="400" y1="172" x2="456" y2="232" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <!-- Raw fetch → mock-fetch -->
+      <line x1="400" y1="324" x2="456" y2="264" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <!-- mock-fetch → Synthetic (primary, accent) -->
+      <line x1="652" y1="248" x2="708" y2="248" stroke="#3b82f6" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+      <!-- Arrow labels (all with paper masks) -->
+      <rect x="184" y="184" width="48" height="12" rx="2" fill="#fafafa"/>
+      <text x="208" y="194" fill="#52525b" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TYPED</text>
+
+      <rect x="184" y="296" width="52" height="12" rx="2" fill="#fafafa"/>
+      <text x="210" y="306" fill="#52525b" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DIRECT</text>
+
+      <rect x="396" y="192" width="64" height="12" rx="2" fill="#fafafa"/>
+      <text x="428" y="202" fill="#2563eb" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FETCH()</text>
+
+      <rect x="396" y="288" width="64" height="12" rx="2" fill="#fafafa"/>
+      <text x="428" y="298" fill="#2563eb" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FETCH()</text>
+
+      <rect x="652" y="228" width="56" height="12" rx="2" fill="#fafafa"/>
+      <text x="680" y="238" fill="#3b82f6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RESOLVE</text>
+
+      <!-- Node: Pages (input) -->
+      <rect x="60" y="216" width="128" height="64" rx="6" fill="#fafafa"/>
+      <rect x="60" y="216" width="128" height="64" rx="6" fill="rgba(82,82,91,0.10)" stroke="#a1a1aa" stroke-width="1"/>
+      <rect x="68" y="224" width="32" height="12" rx="2" fill="transparent" stroke="rgba(161,161,170,0.50)" stroke-width="0.8"/>
+      <text x="84" y="233" fill="#a1a1aa" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+      <text x="124" y="252" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Pages</text>
+      <text x="124" y="268" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">6 routes</text>
+
+      <!-- Node: api.ts (backend) -->
+      <rect x="240" y="140" width="160" height="64" rx="6" fill="#fafafa"/>
+      <rect x="240" y="140" width="160" height="64" rx="6" fill="#ffffff" stroke="#18181b" stroke-width="1"/>
+      <rect x="248" y="148" width="40" height="12" rx="2" fill="transparent" stroke="rgba(24,24,27,0.40)" stroke-width="0.8"/>
+      <text x="268" y="157" fill="#18181b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CLIENT</text>
+      <text x="320" y="176" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">lib/api.ts</text>
+      <text x="320" y="192" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">typed methods</text>
+
+      <!-- Node: Raw fetch (backend, dashed/optional) -->
+      <rect x="240" y="292" width="160" height="64" rx="6" fill="#fafafa"/>
+      <rect x="240" y="292" width="160" height="64" rx="6" fill="rgba(24,24,27,0.02)" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="248" y="300" width="36" height="12" rx="2" fill="transparent" stroke="rgba(24,24,27,0.20)" stroke-width="0.8"/>
+      <text x="266" y="309" fill="#52525b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RAW</text>
+      <text x="320" y="328" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Page fetch()</text>
+      <text x="320" y="344" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">people, settings, …</text>
+
+      <!-- Node: mock-fetch (FOCAL) -->
+      <rect x="456" y="216" width="196" height="64" rx="6" fill="#fafafa"/>
+      <rect x="456" y="216" width="196" height="64" rx="6" fill="rgba(59,130,246,0.10)" stroke="#3b82f6" stroke-width="1"/>
+      <rect x="464" y="224" width="60" height="12" rx="2" fill="transparent" stroke="rgba(59,130,246,0.50)" stroke-width="0.8"/>
+      <text x="494" y="233" fill="#3b82f6" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">INTERCEPT</text>
+      <text x="644" y="276" fill="rgba(59,130,246,0.10)" font-size="32" font-weight="700" font-family="'Geist Mono', monospace" text-anchor="end">01</text>
+      <text x="554" y="252" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">mock-fetch.ts</text>
+      <text x="554" y="268" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">window.fetch shim</text>
+
+      <!-- Node: Synthetic dataset (store) -->
+      <rect x="708" y="216" width="200" height="64" rx="6" fill="#fafafa"/>
+      <rect x="708" y="216" width="200" height="64" rx="6" fill="rgba(24,24,27,0.05)" stroke="#52525b" stroke-width="1"/>
+      <rect x="716" y="224" width="36" height="12" rx="2" fill="transparent" stroke="rgba(82,82,91,0.50)" stroke-width="0.8"/>
+      <text x="734" y="233" fill="#52525b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DATA</text>
+      <text x="808" y="252" fill="#18181b" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Synthetic dataset</text>
+      <text x="808" y="268" fill="#52525b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">47 fake devices</text>
+
+      <!-- Legend strip -->
+      <line x1="40" y1="404" x2="960" y2="404" stroke="rgba(24,24,27,0.12)" stroke-width="0.8"/>
+      <text x="40" y="420" fill="#52525b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="436" width="14" height="10" rx="2" fill="rgba(59,130,246,0.10)" stroke="#3b82f6" stroke-width="1"/>
+      <text x="60" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Focal / interceptor</text>
+
+      <rect x="200" y="436" width="14" height="10" rx="2" fill="#ffffff" stroke="#18181b" stroke-width="1"/>
+      <text x="220" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Backend / client</text>
+
+      <rect x="360" y="436" width="14" height="10" rx="2" fill="rgba(24,24,27,0.05)" stroke="#52525b" stroke-width="1"/>
+      <text x="380" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Store / data</text>
+
+      <rect x="476" y="436" width="14" height="10" rx="2" fill="rgba(24,24,27,0.02)" stroke="rgba(24,24,27,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="496" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Optional / raw path</text>
+
+      <rect x="620" y="436" width="14" height="10" rx="2" fill="rgba(82,82,91,0.10)" stroke="#a1a1aa" stroke-width="1"/>
+      <text x="640" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">UI / input</text>
+
+      <line x1="740" y1="442" x2="768" y2="442" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="776" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">fetch() call</text>
+
+      <line x1="860" y1="442" x2="888" y2="442" stroke="#3b82f6" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="896" y="444" fill="#52525b" font-size="8.5" font-family="'Inter', sans-serif">Primary</text>
+    </svg>
+  </div>
+</body>
+</html>
