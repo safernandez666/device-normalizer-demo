@@ -18,6 +18,9 @@ data/
 *.db-shm
 *.db-wal
 
+# Apple HEIC source files (kept locally, PNG is committed)
+*.heic
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

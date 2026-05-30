@@ -1,3 +1,5 @@
+<p align="center"><img src="images/logo.png" alt="Device Normalizer" width="360"></p>
+
 # Device Normalizer
 
 <!-- README-I18N:START -->
