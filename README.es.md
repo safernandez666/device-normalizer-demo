@@ -6,6 +6,8 @@
 
 <!-- README-I18N:END -->
 
+![Dashboard de Device Normalizer](docs/screenshots/dashboard.png)
+
 > Un dashboard de cobertura de dispositivos para equipos de seguridad. Correlaciona
 > fuentes de **EDR + MDM + IDP** en un único inventario normalizado, expone los
 > gaps de cobertura y puntúa la postura general de la flota.
@@ -113,6 +115,23 @@ npm run build
   de framer-motion se suavizan.
 - Theme claro / oscuro con toggle persistente.
 - Mezcla español / inglés en algunas superficies — preservada del original.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><a href="docs/screenshots/controls.png"><img src="docs/screenshots/controls.png" alt="Controls"></a><br><sub><b>Controles</b> — checks taggeados como KRI/CIS cruzando Okta, JumpCloud y CrowdStrike.</sub></td>
+    <td width="50%"><a href="docs/screenshots/people.png"><img src="docs/screenshots/people.png" alt="People"></a><br><sub><b>People</b> — compliance por owner con drill-down.</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/screenshots/dual-use.png"><img src="docs/screenshots/dual-use.png" alt="Dual-use"></a><br><sub><b>Dual-use</b> — devices corporativos vs personales, con flujo de acknowledge.</sub></td>
+    <td><a href="docs/screenshots/search.png"><img src="docs/screenshots/search.png" alt="Asset search"></a><br><sub><b>Asset search</b> — filtro del inventario normalizado.</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Settings"></a><br><sub><b>Settings</b> — intervalo de sync, health de sources, últimas corridas.</sub></td>
+    <td><a href="docs/screenshots/ai-assistant.png"><img src="docs/screenshots/ai-assistant.png" alt="Asistente IA"></a><br><sub><b>Asistente IA</b> — panel de Q&A acotado (canned en el demo).</sub></td>
+  </tr>
+</table>
 
 ## Limitaciones conocidas del demo
 

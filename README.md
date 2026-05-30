@@ -6,6 +6,8 @@
 
 <!-- README-I18N:END -->
 
+![Device Normalizer dashboard](docs/screenshots/dashboard.png)
+
 > A device-coverage security dashboard. Correlates **EDR + MDM + IDP** sources
 > into a single normalized inventory, surfaces coverage gaps, and scores
 > overall fleet posture.
@@ -110,6 +112,23 @@ npm run build
   reveals soften.
 - Light / dark theme with persistent toggle.
 - Mixed Spanish / English copy in some surfaces — preserved from the original.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><a href="docs/screenshots/controls.png"><img src="docs/screenshots/controls.png" alt="Controls"></a><br><sub><b>Controls</b> — KRI/CIS-tagged checks across Okta, JumpCloud, CrowdStrike.</sub></td>
+    <td width="50%"><a href="docs/screenshots/people.png"><img src="docs/screenshots/people.png" alt="People"></a><br><sub><b>People</b> — per-owner compliance with drill-down.</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/screenshots/dual-use.png"><img src="docs/screenshots/dual-use.png" alt="Dual-use"></a><br><sub><b>Dual-use</b> — corporate vs personal devices, with ack flow.</sub></td>
+    <td><a href="docs/screenshots/search.png"><img src="docs/screenshots/search.png" alt="Asset search"></a><br><sub><b>Asset search</b> — filter the normalized inventory.</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Settings"></a><br><sub><b>Settings</b> — sync interval, source health, recent runs.</sub></td>
+    <td><a href="docs/screenshots/ai-assistant.png"><img src="docs/screenshots/ai-assistant.png" alt="AI assistant"></a><br><sub><b>AI assistant</b> — scoped Q&A panel (canned demo).</sub></td>
+  </tr>
+</table>
 
 ## Known demo limitations
 
